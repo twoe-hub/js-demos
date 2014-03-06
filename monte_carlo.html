@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Monte Carlo Method</title>
+
+    <style type="text/CSS">
+      
+      body {
+          font-family: arial; 
+          font-size: 0.8em;
+      }
+      
+      #canvas_container {
+          width: 480px;
+          border: 0px solid #aaa;
+          padding: 2px;
+      }
+      
+      #control_panel {
+          float: left;
+      }
+      
+      #display_panel {
+          float: left;
+      }
+
+      fieldset {
+          width: 220px;
+          border:0;
+      }
+      fieldset ul, fieldset li{
+          margin:0; padding:10px 0px 0px 0px; list-style:none;
+      }
+      fieldset li{
+          clear:both;
+          padding-bottom:10px;
+      }
+      fieldset input, fieldset button {
+          float:left;
+      }
+      fieldset label{
+          width:120px;
+          float:left;
+      }
+
+    </style>
+
+    <script type="text/javascript" src="js/raphael/raphael.js"></script>
+
+    <script type="text/javascript">
+      
+      var paper;
+      var count = 0;
+      var times = 0;
+      var radius = 480;
+
+      window.onload = function() {          
+          paper = new Raphael(document.getElementById('canvas_container'), radius, radius);
+          reset();
+      } 
+      
+      function mc_pi(t) {
+          var x = 0;
+          var y = 0;
+
+          for(var i=0; i<t; i++) {
+              x = Math.random() * 1;
+              y = Math.random() * 1;        
+              if((x*x+y*y) <= 1){
+                  count+=1;
+              }           
+              plot(x, y);
+          }
+
+          times+=t;
+          var r = document.getElementById("radius").value;
+          document.getElementById("times").value = times;          
+          document.getElementById("pi_mc").value = 4*count/times;
+          document.getElementById("area_mc").value = (4*count/times)*r*r;
+          document.getElementById("area").value = Math.PI*r*r;
+      }
+
+      function plot(x, y) {
+          circle = paper.circle( x*radius, radius-(y*radius), 1).attr({
+              fill: '#000'
+          });
+      }
+
+      function reset() {
+          count = times = 0;
+          document.getElementById("times").value=0;
+          document.getElementById("pi_mc").value=0;
+          document.getElementById("area_mc").value=0;
+
+          paper.clear();
+          var rect = paper.rect(0, 0, radius, radius);
+          var circle = paper.circle(0, radius, radius).attr({
+              stroke: 'none',
+              fill: '#A9F5E1'
+          });
+      }
+
+      function calc_area(){
+          var r = document.getElementById("radius").value;
+          var pi = document.getElementById("pi_mc").value;
+
+          document.getElementById("area").value=Math.PI*r*r;
+          document.getElementById("area_mc").value=pi*r*r;
+
+      }
+
+    </script>
+    
+  </head>
+  <body>
+    <div id="canvas_container"></div>
+    <div id="display_panel">
+      <fieldset>
+        <ul>
+          <li>
+            <label for="radius">Radius:</label>
+            <input type="text" id="radius" name="radius" value="0" size="8"
+                   onchange="calc_area()" maxlength="4">
+          </li>
+          <li>
+            <label for="pi_mc">Pseudo-&pi;:</label>
+            <input type="text" id="pi_mc" name="pi_mc" value="0" size="8" readonly>
+          </li>
+          <li>
+            <label for="area_mc">Area (pseudo-&pi;):</label>
+            <input type="text" id="area_mc" name="area_mc" value="0" size="8" readonly>
+          </li>
+          <li>
+            <label for="area">Area (&pi;):</label>
+            <input type="text" id="area" name="area" value="0" size="8" readonly>
+          </li>
+        </ul>
+      </fieldset>
+    </div>
+
+    <div id="control_panel">
+      <fieldset>
+        <ul>
+          <li>
+            <label for="times">Times:</label>
+            <input type="text" id="times" name="times" value="0" size="8"
+                   readonly onclick="reset()">
+          </li>
+          <li>
+            <label for="10">Run:</label>
+            <button id="10" name="10" onclick="mc_pi(10)">x 10</button>
+          </li>
+          <li>
+            <label for="100">&nbsp;</label>
+            <button id="100" name="100" onclick="mc_pi(100)">x 100</button>
+          </li>
+          <li>
+            <label for="1000">&nbsp;</label>
+            <button id="1000" name="1000" onclick="mc_pi(1000)">x 1000</button>
+          </li>
+        </ul>
+      </fieldset>
+    </div>
+  </body>
+</html>
