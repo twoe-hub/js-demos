@@ -14,6 +14,7 @@
           width: 480px;
           border: 0px solid #aaa;
           padding: 2px;
+          float: left;
       }
       
       #control_panel {
@@ -59,10 +60,10 @@
           reset();
       } 
       
-      function mc_pi(t) {
+      function mc_pi() {
           var x = 0;
           var y = 0;
-
+          var t = document.getElementById("points").value;
           for(var i=0; i<t; i++) {
               x = Math.random() * 1;
               y = Math.random() * 1;        
@@ -72,9 +73,10 @@
               plot(x, y);
           }
 
-          times+=t;
+          times+=parseInt(t);
           var r = document.getElementById("radius").value;
-          document.getElementById("times").value = times;          
+
+          document.getElementById("total_points").value = times;          
           document.getElementById("pi_mc").value = 4*count/times;
           document.getElementById("area_mc").value = (4*count/times)*r*r;
           document.getElementById("area").value = Math.PI*r*r;
@@ -88,9 +90,13 @@
 
       function reset() {
           count = times = 0;
-          document.getElementById("times").value=0;
+          document.getElementById("radius").value=0;
+          document.getElementById("area").value=0;
+          document.getElementById("total_points").value=0;
           document.getElementById("pi_mc").value=0;
           document.getElementById("area_mc").value=0;
+          document.getElementById("points").value=10;
+
 
           paper.clear();
           var rect = paper.rect(0, 0, radius, radius);
@@ -114,7 +120,7 @@
   </head>
   <body>
     <div id="canvas_container"></div>
-    <div id="display_panel">
+    <div id="control_panel">
       <fieldset>
         <ul>
           <li>
@@ -136,27 +142,26 @@
           </li>
         </ul>
       </fieldset>
-    </div>
-
-    <div id="control_panel">
       <fieldset>
         <ul>
           <li>
-            <label for="times">Times:</label>
-            <input type="text" id="times" name="times" value="0" size="8"
-                   readonly onclick="reset()">
+            <label for="total_points">Total points:</label>
+            <input type="text" id="total_points" name="total_points" value="0" size="8" readonly>
           </li>
           <li>
-            <label for="10">Run:</label>
-            <button id="10" name="10" onclick="mc_pi(10)">x 10</button>
+            <label for="10">Point:</label>
+            <select id="points" name="points">
+              <option value="10" selected>10</option>
+              <option value="100">100</option>
+              <option value="1000">1,000</option>
+              <option value="10000">10,000</option>
+            </select>
           </li>
           <li>
-            <label for="100">&nbsp;</label>
-            <button id="100" name="100" onclick="mc_pi(100)">x 100</button>
           </li>
-          <li>
-            <label for="1000">&nbsp;</label>
-            <button id="1000" name="1000" onclick="mc_pi(1000)">x 1000</button>
+          <li> 
+            <button id="run" name="run" onclick="mc_pi()">Run</button>
+            <button id="reset" name="reset" onclick="reset()">Reset</button>
           </li>
         </ul>
       </fieldset>
