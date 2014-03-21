@@ -57,7 +57,7 @@
           reset();
       } 
       
-      function mc_pi() {
+      function monteCarloPi() {
           var x = 0;
           var y = 0;
           var t = document.getElementById("points").value;
@@ -106,7 +106,7 @@
           });
       }
 
-      function calc_area(){
+      function calculateArea(){
           var r = document.getElementById("radius").value;
           var pi = document.getElementById("pi_mc").value;
 
@@ -126,7 +126,7 @@
           <li>
             <label for="radius">Radius:</label>
             <input type="text" id="radius" name="radius" value="0" size="8"
-                   onchange="calc_area()" maxlength="4">
+                   onchange="calculateArea()" maxlength="4">
           </li>
           <li>
             <label for="pi_mc">Pseudo-&pi;:</label>
@@ -160,7 +160,7 @@
           <li>
           </li>
           <li> 
-            <button id="run" name="run" onclick="mc_pi()">Run</button>
+            <button id="run" name="run" onclick="monteCarloPi()">Run</button>
             <button id="reset" name="reset" onclick="reset()">Reset</button>
           </li>
         </ul>

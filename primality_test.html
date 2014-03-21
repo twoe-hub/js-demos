@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<html>
+  <head>
+    <title>Prime Number Demo</title>
+    <style type="text/CSS">
+            
+      .bar {}
+
+      .axis {
+          font: .9em arial;
+          font-weight: bold;
+      }
+      
+      .axis path,
+      .axis line {
+          fill: none;
+          stroke: #000;
+          shape-rendering: crispEdges;
+      }
+      
+      .x.axis path {
+          display: none;
+      }
+
+      body {
+          font-family: arial; 
+          font-size: 0.8em;
+      }   
+      
+      svg {
+          float: left;
+          padding-right:40px;
+      }
+      
+      #control_panel {
+          padding-top: 20px;
+      }
+
+      fieldset {
+          width: 260px;
+          border:0;
+      }
+      fieldset ul, fieldset li{
+          margin:0; padding:10px 0px 0px 0px; list-style:none;
+      }
+      fieldset li{
+          clear:both;
+          padding-bottom:10px;
+      }
+      fieldset input, fieldset button {
+          float:left;
+      }
+      fieldset label{
+          width:80px;
+          float:left;
+      }
+      span {
+          color: red;
+      }
+    </style>    
+
+    <script src="js/d3/d3.v3.min.js"></script>
+    <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
+
+    <script type="text/javascript">      
+      var stepsFLT = 0;
+      var stepsTD = 0
+      var resPPrime = false;
+      var resPrime = false;
+
+      function isMultOfNeibrOfSixers (n) {
+          var upperBound = Math.sqrt(n.valueOf()) + 1;
+          for(var i=6; i<=upperBound; i+=6) {
+              if ((n.mod(i+1) * n.mod(i-1)) == 0){
+                  return true;
+              }
+              stepsTD+=1;
+          }
+          return false;
+      }
+            
+      function getRandomInt(min, max) {
+          return Math.floor(Math.random() * (max - min)) + min;
+      }
+      
+      function expMod(base, exp, m) {
+          stepsFLT+=1;
+          if(exp.equals(0))
+              return bigInt(1);
+          if(exp.mod(2) == 0) {
+              return expMod(base, exp.divide(2), m).pow(2).mod(m);
+          } else {
+              return expMod(base, exp.minus(1), m).times(base).mod(m);
+          }
+      }
+      
+      function isPrime(s) {
+          var n = bigInt(""+s);
+          stepsTD = 1;
+          if (n.lesserOrEquals(1))
+              return false;
+          if (n.equals(2) || n.equals(3))
+              return true;
+          if ((n.mod(2) * n.mod(3)) == 0)
+              return false
+         
+          return ! isMultOfNeibrOfSixers(n);
+      }
+
+      function isProbablyPrime(s, t) {
+          var n = bigInt(s);
+          stepsFLT = 0;
+          isPPrime = true;
+          for(var i=0; i<t; i++) {
+              var b = getRandomInt(1, n.valueOf());
+              if(!expMod(b, n, n).equals(b))
+                  return false;
+          }
+          return isPPrime;
+      }
+
+    </script>
+  </head>
+  <body>
+    <script type="text/javascript">            
+      var margin = {top: 20, right: 20, bottom: 30, left: 60},
+      width = 480 - margin.left - margin.right,
+      height = 640 - margin.top - margin.bottom;
+      
+      var x = d3.scale.ordinal()
+      .rangeRoundBands([0, width], .2);
+      
+      var y = d3.scale.linear()
+      .range([height, 0]);
+      
+      var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom");
+      
+      var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left")
+      .ticks(20);
+      
+      var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      var jsonData = [
+          {"xlabel":"Fermat theorem","steps":"3200"},
+          {"xlabel":"Trial division","steps":"3200"}
+      ];
+      
+      function refreshGraph() {
+          svg.selectAll(".bar")
+              .data(jsonData)
+              .transition()
+              .attr("y", function(d) { return y(d.steps); })
+              .attr("height", function(d) { return height - y(d.steps); })
+              .attr("fill", function(d) {
+                  return d.steps>2400 ? "brown" : "steelblue";
+              });
+      }
+      
+      d3.tsv("data.tsv", type, function() {
+          x.domain(jsonData.map(function(d) { return d.xlabel; }));
+          y.domain([0, d3.max(jsonData, function(d) { return d.steps; })]);
+          
+          svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+          
+          svg.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+              .append("text")
+              .attr("transform", "rotate(-90)")
+              .attr("y", 6)
+              .attr("dy", ".71em")
+              .style("text-anchor", "end")
+              .text("Steps");
+          
+          svg.selectAll(".bar")
+              .data(jsonData)
+              .enter().append("rect")
+              .attr("class", "bar")
+              .attr("fill", function(d) {
+                  return "#fff";
+              })
+              .attr("x", function(d) { return x(d.xlabel); })
+              .attr("width", x.rangeBand())
+              .attr("y", function(d) { return y(d.steps); })
+              .attr("height", function(d) { return height - y(d.steps); });
+      });
+      
+      function type(d) {
+          return d;
+      }
+      
+      function changeN(plusMinusOne){
+          var curr = parseInt(document.getElementById("num").value);
+          var t = parseInt(document.getElementById("trials").value);
+          var n = ""+(curr+plusMinusOne);
+          document.getElementById("num").value = n;
+          var resPPrime = isProbablyPrime(n, t);
+          var resPrime = isPrime(n);
+          jsonData[0].steps = stepsFLT;
+          jsonData[1].steps = stepsTD;
+          refreshGraph();
+          document.getElementById("result_td").style.color = resPrime ? "lightgreen" : "red";
+          document.getElementById("result_flt").style.color = resPPrime ? "lightgreen" : "red";
+      }
+
+      function changeT(plusMinusOne){
+          var n = document.getElementById("num").value;
+          var t = parseInt(document.getElementById("trials").value)+plusMinusOne;
+          document.getElementById("trials").value = t;
+
+          resPPrime = isProbablyPrime(n, t);
+          jsonData[0].steps = stepsFLT;
+          refreshGraph();
+          document.getElementById("result_flt").style.color = resPPrime ? "lightgreen" : "red";
+      }
+
+    </script>
+    <div id="control_panel">
+      <fieldset>
+        <ul>
+          <li>
+            <label for="num">Number:</label>
+            <button onclick="changeN(-2)"> - </button>
+            <input id="num" type="number" value="1" maxlength="9" size="9">
+            <button onclick="changeN(2)"> + </button>
+          </li>
+          <li>
+            <label for="trials">Trials:</label>
+            <button onclick="changeT(-1)"> - </button>
+            <input id="trials" type="number" value="1" maxlength="3" size="9">
+            <button onclick="changeT(1)"> + </button>
+          </li>
+          <li>
+            <label for="result_td">Prime (TD)?</label>
+            <span id="result_td">||||||||||||||||||||</span>
+          </li>
+          <li>
+            <label for="result_flt">Prime (FLT)?</label>
+            <span id="result_flt">||||||||||||||||||||</span>
+          </li>
+          <li>
+            <label for="repeat"></label>
+            <button onclick="changeN(0)">Repeat </button>
+          </li>
+        </ul>
+      </fieldset>
+    </div>
+  </body>
+</html>
