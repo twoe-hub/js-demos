@@ -78,8 +78,8 @@
           var r = document.getElementById("radius").value;
 
           document.getElementById("total_points").value = times;          
-          document.getElementById("pi_mc").value = 4*count/times;
-          document.getElementById("area_mc").value = (4*count/times)*r*r;
+          document.getElementById("ppi").value = 4*count/times;
+          document.getElementById("parea").value = (4*count/times)*r*r;
           document.getElementById("area").value = Math.PI*r*r;
       }
 
@@ -93,8 +93,8 @@
           document.getElementById("radius").value=0;
           document.getElementById("area").value=0;
           document.getElementById("total_points").value=0;
-          document.getElementById("pi_mc").value=0;
-          document.getElementById("area_mc").value=0;
+          document.getElementById("ppi").value=0;
+          document.getElementById("parea").value=0;
           document.getElementById("points").value=10;
 
 
@@ -108,10 +108,10 @@
 
       function calculateArea(){
           var r = document.getElementById("radius").value;
-          var pi = document.getElementById("pi_mc").value;
+          var pi = document.getElementById("ppi").value;
 
           document.getElementById("area").value=Math.PI*r*r;
-          document.getElementById("area_mc").value=pi*r*r;
+          document.getElementById("parea").value=pi*r*r;
 
       }
 
@@ -129,20 +129,20 @@
                    onchange="calculateArea()" maxlength="4">
           </li>
           <li>
-            <label for="pi_mc">&pi;:</label>
-            <input type="text" id="pi_mc" name="pi_mc" value="3.141592653589793" size="8" readonly>
+            <label for="pi">&pi;:</label>
+            <input type="text" id="pi" name="pi" value="3.141592653589793" size="8" readonly>
           </li>
           <li>
-            <label for="pi_mc">Pseudo-&pi;:</label>
-            <input type="text" id="pi_mc" name="pi_mc" value="0" size="8" readonly>
+            <label for="ppi">Pseudo-&pi;:</label>
+            <input type="text" id="ppi" name="ppi" value="0" size="8" readonly>
           </li>
           <li>
             <label for="area">Area (&pi;):</label>
             <input type="text" id="area" name="area" value="0" size="8" readonly>
           </li>
           <li>
-            <label for="area_mc">Area (pseudo-&pi;):</label>
-            <input type="text" id="area_mc" name="area_mc" value="0" size="8" readonly>
+            <label for="parea">Area (pseudo-&pi;):</label>
+            <input type="text" id="parea" name="parea" value="0" size="8" readonly>
           </li>
         </ul>
       </fieldset>
